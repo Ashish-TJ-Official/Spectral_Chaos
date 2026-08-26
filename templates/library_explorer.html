@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SPECTRAL CHAOS | Library Explorer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config = {
+    darkMode: "class",
+    theme: {
+    extend: {
+        "colors": {
+            "on-surface-variant": "#c1c6d7",
+            "outline-variant": "#414755",
+            "surface-dim": "#131313",
+            "primary": "#adc6ff",
+            "surface": "#131313",
+            "secondary-container": "#00f4fe",
+            "primary-container": "#4b8eff",
+            "surface-container-lowest": "#0e0e0e",
+            "on-surface": "#e5e2e1",
+            "surface-container-high": "#2a2a2a",
+            "surface-container": "#201f1f",
+            "secondary": "#e6feff"
+        },
+        "fontFamily": {
+            "headline": ["Space Grotesk"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+        }
+    },
+    },
+}
+</script>
+<style>
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.glass-panel {
+    background: rgba(53, 53, 52, 0.6);
+    backdrop-filter: blur(20px);
+}
+</style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface font-body selection:bg-primary/30">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#0E0E0E]/80 backdrop-blur-xl border-b border-[#ADC6FF]/15 shadow-[0_4px_24px_rgba(173,198,255,0.06)]">
+<div class="flex justify-between items-center px-8 h-16 w-full">
+<div class="flex-1 flex items-center justify-start">
+<div class="text-xl font-bold tracking-tighter bg-gradient-to-r from-[#ADC6FF] to-[#4B8EFF] bg-clip-text text-transparent font-headline">SPECTRAL CHAOS</div>
+</div>
+<nav class="flex-none hidden md:flex items-center space-x-8 font-['Space_Grotesk'] tracking-wider uppercase text-xs">
+<a class="text-[#ADC6FF] border-b-2 border-[#ADC6FF] pb-1 font-bold" href="/">Library Explorer</a>
+<a class="text-slate-500 hover:text-[#ADC6FF] font-medium transition-colors border-b-2 border-transparent pb-1" href="/mineral-identification">Mineral Identification</a>
+<a class="text-slate-500 hover:text-[#ADC6FF] font-medium transition-colors border-b-2 border-transparent pb-1" href="/linear-unmixing">Linear Unmixing</a>
+</nav>
+<div class="flex-1 flex items-center justify-end space-x-4 text-slate-400">
+<button class="p-2 hover:bg-[#2A2A2A]/50 hover:text-[#ADC6FF] transition-all duration-300 rounded-full">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="p-2 hover:bg-[#2A2A2A]/50 hover:text-[#ADC6FF] transition-all duration-300 rounded-full">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-24 pb-12 px-8 min-h-screen">
+<div class="max-w-6xl mx-auto space-y-12">
+<!-- Hero Educational Section -->
+<section class="block">
+<div class="space-y-6">
+<div class="inline-flex items-center px-3 py-1 rounded-full bg-secondary-container/10 text-secondary-container text-[10px] font-bold uppercase tracking-widest">
+<span class="w-2 h-2 rounded-full bg-secondary-container mr-2 shadow-[0_0_8px_#00f4fe]"></span>
+    Spectral Education Module
+</div>
+<h1 class="text-4xl md:text-5xl font-headline font-bold tracking-tight text-white leading-tight">
+    Understanding Spectral Data: <br/>
+<span class="text-primary">The Fingerprint of Remote Sensing</span>
+</h1>
+<div class="text-on-surface-variant leading-relaxed text-lg w-full font-light text-justify">
+    Spectral remote sensing is more than just imaging; it is a molecular interrogation of the Earth's surface. Every material, from the crystalline lattice of <span class="text-secondary">kaolinite</span> to the cellular structures of vegetation, interacts with electromagnetic radiation in unique, predictable ways. When photons strike a surface, they are selectively absorbed, reflected, or transmitted based on the material's chemical composition and physical state. 
+    <br/><br/>
+    By measuring the intensity of reflected light across hundreds of narrow, contiguous wavelength bands, we construct a <span class="text-primary-fixed">spectral signature</span>. These "fingerprints" allow scientists to identify minerals that are visually indistinguishable, detect early-stage plant stress, and quantify atmospheric pollutants from hundreds of miles above. In the Digital Observatory, we leverage these high-dimensional data cubes to decode the spectral chaos of our planet into actionable planetary intelligence.
+</div>
+</div>
+</section>
+<!-- Selection & Control Module -->
+<section class="glass-panel rounded-xl p-8 border border-outline-variant/15">
+<div class="flex flex-col md:flex-row items-center justify-between gap-6">
+<div class="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="space-y-2">
+<label class="block text-[10px] uppercase tracking-widest text-slate-500 font-bold">Type</label>
+<div class="relative">
+<select id="selector-level-0" class="w-full bg-surface-container-lowest border-0 ring-1 ring-outline-variant/20 focus:ring-secondary text-on-surface py-3 px-4 rounded-lg appearance-none cursor-pointer transition-all text-sm font-body">
+<option value="">Select...</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-lg">expand_more</span>
+</div>
+</div>
+<div class="space-y-2">
+<label class="block text-[10px] uppercase tracking-widest text-slate-500 font-bold">Class</label>
+<div class="relative">
+<select id="selector-level-1" disabled class="w-full bg-surface-container-lowest border-0 ring-1 ring-outline-variant/20 focus:ring-secondary text-on-surface py-3 px-4 rounded-lg appearance-none cursor-pointer transition-all text-sm font-body">
+<option value="">Select...</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-lg">expand_more</span>
+</div>
+</div>
+<div class="space-y-2">
+<label class="block text-[10px] uppercase tracking-widest text-slate-500 font-bold">Subclass/Species</label>
+<div class="relative">
+<select id="selector-level-2" disabled class="w-full bg-surface-container-lowest border-0 ring-1 ring-outline-variant/20 focus:ring-secondary text-on-surface py-3 px-4 rounded-lg appearance-none cursor-pointer transition-all text-sm font-body">
+<option value="">Select...</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-lg">expand_more</span>
+</div>
+</div>
+<div class="space-y-2">
+<label class="block text-[10px] uppercase tracking-widest text-slate-500 font-bold">Texture</label>
+<div class="relative">
+<select id="selector-level-3" disabled class="w-full bg-surface-container-lowest border-0 ring-1 ring-outline-variant/20 focus:ring-secondary text-on-surface py-3 px-4 rounded-lg appearance-none cursor-pointer transition-all text-sm font-body">
+<option value="">Select...</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-lg">expand_more</span>
+</div>
+</div>
+</div>
+<div class="flex-shrink-0 self-end">
+<button id="generate-btn" class="h-12 px-8 rounded-lg bg-gradient-to-r from-primary to-primary-container text-on-primary font-headline font-bold uppercase tracking-widest text-xs shadow-[0_0_20px_rgba(173,198,255,0.2)] hover:shadow-primary/30 transition-all active:scale-95">
+    Generate Plot
+</button>
+</div>
+</div>
+</section>
+<!-- Spectral Visualization Container -->
+<section class="space-y-6">
+<div class="flex justify-between items-end">
+<h2 class="font-headline text-2xl font-bold tracking-tight text-white flex items-center">
+<span class="material-symbols-outlined mr-3 text-secondary">analytics</span>
+    Live Spectral Analysis
+</h2>
+<div class="flex space-x-2">
+<div class="px-3 py-1 bg-surface-container-high rounded-sm text-[10px] uppercase font-bold text-slate-400">Reflectance</div>
+<div class="px-3 py-1 bg-surface-container-high rounded-sm text-[10px] uppercase font-bold text-slate-400">Wavelength (nm)</div>
+</div>
+</div>
+<div class="bg-surface-container rounded-xl p-8 border border-outline-variant/5 shadow-inner" id="plot-container">
+    <div class="aspect-[21/9] w-full relative flex items-center justify-center px-4 pb-12 pt-12 border border-outline-variant/20 text-on-surface-variant font-bold">
+        Please select a class and click "Generate Plot" to visually render the spectral signature here.
+    </div>
+</div>
+</section>
+</div>
+</main>
+<script>
+let hierarchy = {};
+const maxLevels = 4;
+const selectors = [
+    document.getElementById('selector-level-0'),
+    document.getElementById('selector-level-1'),
+    document.getElementById('selector-level-2'),
+    document.getElementById('selector-level-3'),
+];
+
+async function loadHierarchy() {
+    const res = await fetch('/api/library-hierarchy');
+    hierarchy = await res.json();
+    updateDropdown(0, Object.keys(hierarchy));
+}
+
+function updateDropdown(level, options) {
+    const select = selectors[level];
+    select.innerHTML = '<option value="">Select...</option>';
+    if (options && options.length > 0) {
+        select.disabled = false;
+        options.sort().forEach(opt => {
+            select.innerHTML += `<option value="${opt}">${opt}</option>`;
+        });
+    } else {
+        select.disabled = true;
+    }
+
+    for (let i = level + 1; i < maxLevels; i++) {
+        selectors[i].innerHTML = '<option value="">Select...</option>';
+        selectors[i].disabled = true;
+    }
+}
+
+function onDropdownChange(level) {
+    const select = selectors[level];
+    if (!select.value) {
+        updateDropdown(level + 1, []);
+        return;
+    }
+
+    let node = hierarchy;
+    for (let i = 0; i <= level; i++) {
+        node = node[selectors[i].value];
+    }
+
+    if (level < maxLevels - 1) {
+        if (node && typeof node === 'object' && !Array.isArray(node)) {
+            updateDropdown(level + 1, Object.keys(node));
+        } else {
+            updateDropdown(level + 1, []);
+        }
+    }
+}
+
+selectors.forEach((select, i) => {
+    select.addEventListener('change', () => onDropdownChange(i));
+});
+
+document.getElementById('generate-btn').addEventListener('click', async () => {
+    const path = selectors.map(s => s.value).filter(v => v);
+    const class_id = path.join('>');
+    
+    if (!class_id) {
+        alert('Please complete your selection');
+        return;
+    }
+
+    const res = await fetch('/api/plot-library', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({class_id: class_id})
+    });
+
+    if (res.ok) {
+        const data = await res.json();
+        const plotDiv = document.getElementById('plot-container');
+        plotDiv.innerHTML = `<img src="${data.image}" alt="Spectral Plot" class="w-full h-full object-contain">`;
+    } else {
+        const data = await res.json();
+        alert('Error: ' + data.error);
+    }
+});
+
+loadHierarchy();
+</script>
+</body></html>

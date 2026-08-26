@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SPECTRAL CHAOS | Linear Unmixing</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config = {
+    darkMode: "class",
+    theme: {
+    extend: {
+        "colors": {
+            "on-surface-variant": "#c1c6d7",
+            "outline-variant": "#414755",
+            "surface-dim": "#131313",
+            "primary": "#adc6ff",
+            "surface": "#131313",
+            "secondary-container": "#00f4fe",
+            "primary-container": "#4b8eff",
+            "surface-container-lowest": "#0e0e0e",
+            "on-surface": "#e5e2e1",
+            "surface-container-high": "#2a2a2a",
+            "surface-container": "#201f1f",
+            "secondary": "#e6feff"
+        },
+        "fontFamily": {
+            "headline": ["Space Grotesk"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+        }
+    },
+    },
+}
+</script>
+<style>
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+}
+body {
+    background-color: #0e0e0e;
+    color: #e5e2e1;
+    font-family: 'Inter', sans-serif;
+}
+.glass-panel {
+    background: rgba(53, 53, 52, 0.6);
+    backdrop-filter: blur(20px);
+}
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #0e0e0e;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #414755;
+    border-radius: 10px;
+}
+</style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface">
+<!-- TopNavBar Implementation -->
+<nav class="fixed top-0 w-full z-50 bg-[#0E0E0E]/80 backdrop-blur-xl border-b border-[#ADC6FF]/15 shadow-[0_4px_24px_rgba(173,198,255,0.06)] flex justify-between items-center px-8 h-16">
+<div class="flex-1 flex items-center justify-start">
+<div class="text-xl font-bold tracking-tighter bg-gradient-to-r from-[#ADC6FF] to-[#4B8EFF] bg-clip-text text-transparent font-headline">SPECTRAL CHAOS</div>
+</div>
+<div class="flex-none hidden md:flex items-center space-x-8 font-['Space_Grotesk'] tracking-wider uppercase text-xs">
+<a class="text-slate-500 hover:text-[#ADC6FF] font-medium transition-colors border-b-2 border-transparent pb-1" href="/">Library Explorer</a>
+<a class="text-slate-500 hover:text-[#ADC6FF] font-medium transition-colors border-b-2 border-transparent pb-1" href="/mineral-identification">Mineral Identification</a>
+<a class="text-[#ADC6FF] border-b-2 border-[#ADC6FF] pb-1 font-bold" href="/linear-unmixing">Linear Unmixing</a>
+</div>
+<div class="flex-1 flex items-center justify-end space-x-4 text-slate-400">
+<button class="p-2 hover:bg-[#2A2A2A]/50 hover:text-[#ADC6FF] transition-all duration-300 rounded-full">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="p-2 hover:bg-[#2A2A2A]/50 hover:text-[#ADC6FF] transition-all duration-300 rounded-full">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="mt-16 p-8 min-h-screen bg-surface p-8 overflow-y-auto custom-scrollbar">
+<div class="max-w-7xl mx-auto grid grid-cols-12 gap-8">
+<!-- Header Section -->
+<header class="col-span-12 mb-4">
+<div class="flex items-baseline gap-4">
+<h1 class="text-4xl font-headline font-bold tracking-tight text-white">Linear Unmixing</h1>
+<span class="px-2 py-0.5 bg-surface-container-high text-primary text-[10px] font-mono rounded tracking-widest uppercase">Algorithm: NNLS</span>
+</div>
+<p class="text-on-surface-variant mt-2 max-w-2xl font-body text-sm leading-relaxed">
+        Deconvolve complex reflectance spectra into their constituent endmember abundances using Non-Negative Linear Spectral Unmixing models.
+    </p>
+</header>
+<!-- Input Configuration Panel -->
+<section class="col-span-12 lg:col-span-4 space-y-6">
+<div class="bg-surface-container-low rounded-xl p-6 border border-outline-variant/15 flex flex-col gap-6">
+<!-- Drop Zone 1: Reflectance -->
+<div id="dropzone-refl">
+<label class="block text-[10px] font-headline font-bold uppercase tracking-[0.2em] text-outline mb-3 pointer-events-none">Reflectance Data</label>
+<div class="border-2 border-dashed border-outline-variant/30 rounded-lg p-8 flex flex-col items-center justify-center text-center group hover:border-primary/50 transition-all cursor-pointer bg-surface-container-lowest/50 pointer-events-none">
+<span class="material-symbols-outlined text-3xl text-outline group-hover:text-primary transition-colors mb-2">upload_file</span>
+<p id="dropzone-refl-text" class="text-xs font-medium text-on-surface w-full px-2 break-all">Drop .CSV or .TXT file</p>
+<p class="text-[10px] text-outline mt-1 italic">Spectral reflectance matrix</p>
+</div>
+</div>
+<!-- Drop Zone 2: Wavelength -->
+<div id="dropzone-wave">
+<label class="block text-[10px] font-headline font-bold uppercase tracking-[0.2em] text-outline mb-3 pointer-events-none">Wavelength Data</label>
+<div class="border-2 border-dashed border-outline-variant/30 rounded-lg p-8 flex flex-col items-center justify-center text-center group hover:border-primary/50 transition-all cursor-pointer bg-surface-container-lowest/50 pointer-events-none">
+<span class="material-symbols-outlined text-3xl text-outline group-hover:text-primary transition-colors mb-2">linear_scale</span>
+<p id="dropzone-wave-text" class="text-xs font-medium text-on-surface w-full px-2 break-all">Drop .CSV or .TXT file</p>
+<p class="text-[10px] text-outline mt-1 italic">Band center definitions (nm/μm)</p>
+</div>
+</div>
+<!-- Settings -->
+<div class="space-y-4 pt-4 border-t border-outline-variant/10">
+<div class="grid grid-cols-2 gap-4">
+<div class="col-span-1">
+<label class="block text-[10px] font-headline font-bold uppercase tracking-[0.2em] text-outline mb-2">Type</label>
+<select id="selector-level-0" class="w-full bg-surface-container-lowest border border-outline-variant/30 text-[11px] rounded-lg px-2 py-2 focus:ring-1 focus:ring-primary appearance-none outline-none text-on-surface">
+</select>
+</div>
+<div class="col-span-1">
+<label class="block text-[10px] font-headline font-bold uppercase tracking-[0.2em] text-outline mb-2">Class</label>
+<select id="selector-level-1" disabled class="w-full bg-surface-container-lowest border border-outline-variant/30 text-[11px] rounded-lg px-2 py-2 focus:ring-1 focus:ring-primary appearance-none outline-none text-on-surface">
+</select>
+</div>
+<div class="col-span-1">
+<label class="block text-[10px] font-headline font-bold uppercase tracking-[0.2em] text-outline mb-2">Subclass</label>
+<select id="selector-level-2" disabled class="w-full bg-surface-container-lowest border border-outline-variant/30 text-[11px] rounded-lg px-2 py-2 focus:ring-1 focus:ring-primary appearance-none outline-none text-on-surface">
+</select>
+</div>
+<div class="col-span-1">
+<label class="block text-[10px] font-headline font-bold uppercase tracking-[0.2em] text-outline mb-2">Texture</label>
+<select id="selector-level-3" disabled class="w-full bg-surface-container-lowest border border-outline-variant/30 text-[11px] rounded-lg px-2 py-2 focus:ring-1 focus:ring-primary appearance-none outline-none text-on-surface">
+</select>
+</div>
+</div>
+<div class="flex gap-3 pt-2">
+<button id="add-btn" class="flex-1 py-3 bg-surface-container-lowest border border-outline-variant/30 text-on-surface font-headline font-bold text-xs tracking-widest uppercase rounded-lg hover:bg-surface-container-high hover:border-primary/50 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">add</span> Add
+</button>
+<button id="compute-btn" class="flex-[2] py-3 bg-gradient-to-br from-primary to-primary-container text-on-primary-container font-headline font-bold text-xs tracking-widest uppercase rounded-lg shadow-[0_8px_32px_rgba(173,198,255,0.15)] hover:shadow-primary/20 hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">bolt</span><span id="compute-text">Compute Unmixing</span>
+</button>
+</div>
+</div>
+<!-- Locked Minerals list -->
+<div id="locked-minerals-container" class="flex flex-wrap gap-2 text-white"></div>
+</div>
+</section>
+<!-- Visualization & Results Panel -->
+<section class="col-span-12 lg:col-span-8 space-y-6">
+<!-- Plot Visualization -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/15 flex flex-col h-[480px]">
+<div class="px-6 py-4 flex justify-between items-center border-b border-outline-variant/10">
+<h3 class="text-xs font-headline font-bold uppercase tracking-widest text-primary">Unmixing Result Visualization</h3>
+</div>
+<div class="flex-1 relative bg-[#0e0e0e] flex flex-col p-4">
+    <div id="plot-container" class="flex-1 flex justify-center items-center text-on-surface-variant font-bold border border-outline-variant/20 relative">
+        Please compute unmixing to view chart.
+    </div>
+
+<!-- Plot Overlays -->
+<div class="absolute top-4 right-8 flex gap-4 pointer-events-none">
+<div class="bg-surface-container-low/80 backdrop-blur-md px-3 py-2 rounded-lg border border-primary/20">
+<p class="text-[9px] text-primary uppercase font-bold tracking-tighter mb-0.5">RNORM ERROR</p>
+<p id="rnorm-val" class="text-base font-headline font-medium">---</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Result Breakdown Grid (Dynamic/Responsive) -->
+<div id="results-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+    <!-- JS injected percentages -->
+</div>
+</section>
+</div>
+</main>
+<script>
+let selectedFiles = { reflectance: null, wavelength: null };
+let hierarchy = {};
+const maxLevels = 4;
+const selectors = [
+    document.getElementById('selector-level-0'),
+    document.getElementById('selector-level-1'),
+    document.getElementById('selector-level-2'),
+    document.getElementById('selector-level-3'),
+];
+let lockedMinerals = [];
+
+async function loadHierarchy() {
+    try {
+        const res = await fetch('/api/library-hierarchy');
+        hierarchy = await res.json();
+        updateDropdown(0, Object.keys(hierarchy));
+    } catch(e) {}
+}
+
+function updateDropdown(level, options) {
+    const select = selectors[level];
+    select.innerHTML = '<option value="">Select...</option>';
+    if (options && options.length > 0) {
+        select.disabled = false;
+        options.sort().forEach(opt => {
+            select.innerHTML += `<option value="${opt}">${opt}</option>`;
+        });
+    } else {
+        select.disabled = true;
+    }
+
+    for (let i = level + 1; i < maxLevels; i++) {
+        selectors[i].innerHTML = '<option value="">Select...</option>';
+        selectors[i].disabled = true;
+    }
+}
+
+function onDropdownChange(level) {
+    const select = selectors[level];
+    if (!select.value) {
+        updateDropdown(level + 1, []);
+        return;
+    }
+
+    let node = hierarchy;
+    for (let i = 0; i <= level; i++) {
+        node = node[selectors[i].value];
+    }
+
+    if (level < maxLevels - 1) {
+        if (node && typeof node === 'object' && !Array.isArray(node)) {
+            updateDropdown(level + 1, Object.keys(node));
+        } else {
+            updateDropdown(level + 1, []);
+        }
+    }
+}
+
+selectors.forEach((select, i) => {
+    select.addEventListener('change', () => onDropdownChange(i));
+});
+
+document.getElementById('add-btn').addEventListener('click', () => {
+    const path = selectors.map(s => s.value).filter(v => v);
+    const class_id = path.join('>');
+    
+    if (!class_id) {
+        alert('Please complete your selection');
+        return;
+    }
+    
+    if (!lockedMinerals.includes(class_id)) {
+        lockedMinerals.push(class_id);
+    }
+    renderLockedMinerals();
+});
+
+function renderLockedMinerals() {
+    const container = document.getElementById('locked-minerals-container');
+    container.innerHTML = '';
+    lockedMinerals.forEach(m => {
+        const parts = m.split('>');
+        const name = parts.length >= 3 ? parts[2] : parts.pop();
+        const div = document.createElement('div');
+        div.className = "px-2 py-1 bg-primary/20 text-primary text-xs rounded flex gap-2 items-center break-words max-w-full";
+        div.innerHTML = `<span>${name}</span><button onclick="removeMineral('${m}')" class="text-white hover:text-red-500 shrink-0">&times;</button>`;
+        container.appendChild(div);
+    });
+}
+window.removeMineral = function(m) {
+    lockedMinerals = lockedMinerals.filter(x => x !== m);
+    renderLockedMinerals();
+};
+
+function setupDropzone(id, fileKey) {
+    const dropzone = document.getElementById(id);
+    const textLabel = document.getElementById(id + '-text');
+    
+    dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('border-primary', 'bg-primary/5');
+    });
+    dropzone.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('border-primary', 'bg-primary/5');
+    });
+    dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('border-primary', 'bg-primary/5');
+        if (e.dataTransfer.files.length) {
+            selectedFiles[fileKey] = e.dataTransfer.files[0];
+            textLabel.innerText = e.dataTransfer.files[0].name;
+        }
+    });
+
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.style.display = 'none';
+    dropzone.appendChild(fileInput);
+
+    dropzone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length) {
+            selectedFiles[fileKey] = e.target.files[0];
+            textLabel.innerText = e.target.files[0].name;
+        }
+    });
+}
+
+document.getElementById('compute-btn').addEventListener('click', async () => {
+    if (lockedMinerals.length === 0 || !selectedFiles.reflectance || !selectedFiles.wavelength) {
+        alert("Please add at least one mineral class and upload both files.");
+        return;
+    }
+    
+    const btnText = document.getElementById('compute-text');
+    btnText.innerText = "COMPUTING... ";
+    
+    const formData = new FormData();
+    formData.append('locked_minerals', JSON.stringify(lockedMinerals));
+    formData.append('reflectance', selectedFiles.reflectance);
+    formData.append('wavelength', selectedFiles.wavelength);
+    
+    try {
+        const res = await fetch('/api/linear-unmix', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await res.json();
+        if (res.ok) {
+            if (data.plot) {
+                document.getElementById('plot-container').innerHTML = `<img src="${data.plot}" class="w-full h-full object-contain">`;
+            }
+            
+            document.getElementById('rnorm-val').innerText = data.rnorm.toFixed(4);
+            
+            const resultsDiv = document.getElementById('results-grid');
+            resultsDiv.innerHTML = '';
+            
+            const colors = ['bg-primary', 'bg-secondary-container', 'bg-tertiary', 'bg-secondary'];
+            
+            data.percentages.forEach((p, i) => {
+                const parts = p.mineral.split('>');
+                const name = parts.length >= 3 ? parts[2] : parts.pop();
+                const col = colors[i % colors.length];
+                resultsDiv.innerHTML += `
+                    <div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/15 hover:bg-surface-container-high transition-all flex flex-col gap-2">
+                    <div class="flex justify-between items-center">
+                    <span class="text-[9px] font-headline font-bold tracking-wider uppercase text-outline w-[80%] break-words">${name}</span>
+                    <div class="w-1.5 h-1.5 rounded-full ${col} shadow-sm shrink-0"></div>
+                    </div>
+                    <div class="flex items-baseline justify-between">
+                    <p class="text-lg font-headline font-bold text-white">${p.percentage.toFixed(1)}%</p>
+                    <div class="w-12 h-0.5 bg-outline-variant/20 rounded-full overflow-hidden shrink-0">
+                    <div class="h-full ${col}" style="width: ${p.percentage}%;"></div>
+                    </div>
+                    </div>
+                    </div>
+                `;
+            });
+            
+        } else {
+            alert("Error: " + data.error);
+        }
+    } catch(e) {
+        alert("Server error.");
+    }
+    btnText.innerText = "Compute Unmixing";
+});
+
+setupDropzone('dropzone-refl', 'reflectance');
+setupDropzone('dropzone-wave', 'wavelength');
+loadHierarchy();
+</script>
+</body></html>
